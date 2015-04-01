@@ -1,13 +1,5 @@
 #!/usr/bin/env python 
-"""
-Entry point for the application for the rest api
 
-from flask import Flask, jsonify
-
-app = Flask(__name__)
-
-if __name__ == '__main__':
-	app.run()"""
 # This is a simple port-forward / proxy, written using only the default python
 # library. If you want to make a suggestion or fix something you can contact-me
 # at voorloop_at_gmail.com
