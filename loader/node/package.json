@@ -1,7 +1,7 @@
 {
   "name": "load-balancer",
   "version": "1.0.0",
-  "description": "A WEB GUI for managing and monitoring WEB traffic load balancers",
+  "description": "This part is used to create Socket.IO support with a MongoDB queue",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

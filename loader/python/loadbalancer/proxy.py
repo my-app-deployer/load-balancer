@@ -8,51 +8,72 @@ import socket
 import select
 import time
 import sys
-
+from deamon import Deamon
+from pymongo import MongoClient
 # Changing the buffer_size and delay, you can improve the speed and bandwidth.
 # But when buffer get to high or delay go too down, you can broke things
 buffer_size = 4096
 delay = 0.0001
-forward_to = ('smtp.zaz.ufsk.br', 25)
+forward_to = ('localhost', 80)
 
+# the Forwarder of the connection
 class Forward:
     def __init__(self):
-        self.forward = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.forward = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a new socket to talk to the remote server
+        self.mongo = MongoClient('mongodb://localhost:27017/')
+        self.db=self.mongo.servers
 
     def start(self, host, port):
         try:
-            self.forward.connect((host, port))
+            self.forward.connect((host, port)) #connects to remote
             return self.forward
         except Exception, e:
             print e
             return False
-
-class TheServer:
+    #returns the server on which the proxy must forward
+    def getServer(self,type,domaine,load=75):
+        server=self.db.type.find_one({"domaine":domaine,"load":load}) #gets a server by domaine and workload less than 75%
+# a proxy deamon
+class Proxy(Deamon):
     input_list = []
     channel = {}
 
     def __init__(self, host, port):
+        self.max_connection=200
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((host, port))
-        self.server.listen(200)
+        self.server.listen(self.max_connection)
+        self.attributes={
+            server:self.server
+            ,running:True
+            ,delay:0.0001 #delay between requests are treated, clock speed kinda
+            ,buffer:4096 #buffer for the socket size
+        }
+        
+    def set(self,key,value):
+        self.attributes[key]=value
+    def get(self,key):
+        return self.attributes[key]
+    def select(self,rlist, wlist, xlist, Timout=null):
+        return select.select(rlist,wlist,xlist,Timout)
+
 
     def main_loop(self):
         self.input_list.append(self.server)
-        while 1:
+        while self.running:
             time.sleep(delay)
-            ss = select.select
-            inputready, outputready, exceptready = ss(self.input_list, [], [])
+            inputready, outputready, exceptready = self.select(self.input_list, [], [])
             for self.s in inputready:
                 if self.s == self.server:
-                    self.on_accept()
+                    self.on_accept()#accepts the socket connection if we are looping on the proxy
                     break
-
+                #otherwise it is a client connection, 
                 self.data = self.s.recv(buffer_size)
-                if len(self.data) == 0:
+                if len(self.data) == 0: #if we donnot have data, close the connections
                     self.on_close()
                     break
-                else:
+                else: #otherwise send buffered data to client
                     self.on_recv()
 
     def on_accept(self):
@@ -88,9 +109,11 @@ class TheServer:
         # here we can parse and/or modify the data before send forward
         print data
         self.channel[self.s].send(data)
+    def run(self):
+      self.main_loop()
 
 if __name__ == '__main__':
-        server = TheServer('', 9090)
+        server = Proxy(host='',port= 9000)
         try:
             server.main_loop()
         except KeyboardInterrupt:

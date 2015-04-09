@@ -1,6 +1,7 @@
 """ 
 This class is used for creating/reading jobs from a mongoDB queue
 """
+import PyMongo
 class Queue(object):
 	"""docstring for Queue"""
 	def __init__(self, arg):
@@ -12,3 +13,4 @@ class Queue(object):
 		pass
 	def publish(self):
 		pass
+		

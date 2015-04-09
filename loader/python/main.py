@@ -7,7 +7,7 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 if __name__ == '__main__':
-	app.run()"""
+	app.run()
 # This is a simple port-forward / proxy, written using only the default python
 # library. If you want to make a suggestion or fix something you can contact-me
 # at voorloop_at_gmail.com
@@ -104,3 +104,26 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             print "Ctrl C - Stopping server"
             sys.exit(1)
+"""
+
+ 
+import sys, time
+from loadbalancer.proxy import Proxy
+ 
+ 
+if __name__ == "__main__":
+        daemon = Proxy('/tmp/daemon-example.pid')
+        if len(sys.argv) == 2:
+                if 'start' == sys.argv[1]:
+                        daemon.start()
+                elif 'stop' == sys.argv[1]:
+                        daemon.stop()
+                elif 'restart' == sys.argv[1]:
+                        daemon.restart()
+                else:
+                        print "Unknown command"
+                        sys.exit(2)
+                sys.exit(0)
+        else:
+                print "usage: %s start|stop|restart" % sys.argv[0]
+                sys.exit(2)
