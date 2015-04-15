@@ -15,23 +15,10 @@ Server: # Class abstraite de serveur (sous windows,linux,etc...)
 	storeLoad # entrer l'état du serveur dans MongoDB
 	createSShKey # gérer les clé ssh
 	createUser # gérer les utilisateurs
+ApacheServer(server): # class pour deployer un serveur apache
+	install # install apache
+	configureDomain #cnfigure un certain domaine
 
-deploy.App:#Class pour géréer un serveur d'application
-	deployApp # deployer application
-	installPackages # install basique de paquet requit pour faire tourner le serveur demandé
-	installUserPackages # install des paquets utilisateurs
-	createVirtualHost # créer un hote virtuel lighthttpd avec un numéro de port libre
-	destroyVirtualHost # detruite un hote virtuel lighthttpd avec un numéro de port libre
-	createRelease # crée un dossier de release
-
-deploy.Db:#Class pour deployer & gérer un serveur de base de données
-	deploy # deployer un sgbd
-	installSgbd # install basique (type de sgbd)
-	createDb # crée une db sur le un sgbd pour une appli
-	destroyDb # detruit une db sur le un sgbd pour une appli
-	getSgbd # Retourne le sgbd utilisé pour la connection
-	connect # connect le sgbd
-	dumpDb # dump la database de l'appli
 
 Proxy: # Proxy routable sur internet
 	http # Forward requete HTTP a un serveur application
@@ -117,16 +104,31 @@ MySql
 			created_at
 			updated_at
 			deleted_at
+		Table:users_databases
+			ID
+			user_id
+			name
+			count
 
 Helper
 =============================
 creating vms with python and libvirt 
- -  http://www.thegeekstuff.com/2014/10/linux-kvm-create-guest-vm/ 
- -  http://www.libvirt.org/html/index.html
+ - http://www.thegeekstuff.com/2014/10/linux-kvm-create-guest-vm/ 
+ - http://www.libvirt.org/html/index.html
 REST api flask 
- -  https://flask-restful.readthedocs.org/en/0.3.2/quickstart.html#a-minimal-api
+ - https://flask-restful.readthedocs.org/en/0.3.2/quickstart.html#a-minimal-api
 
-
+Load balancer
+ - https://serversforhackers.com/so-you-got-yourself-a-loadbalancer
+ - https://serversforhackers.com/using-nginx-as-a-load-balancer
+Create proxy with python
+ - https://code.google.com/p/python-proxy/source/browse/trunk/PythonProxy.py
+ - With Twisted http://stackoverflow.com/questions/9465236/python-twisted-proxy-and-modifying-content
+Create proxy with C++
+ - https://github.com/facebook/proxygen
+Vanish pour faire proxy + HAProxy
+ - http://varnish-cache.org/
+ 
 Developpement Process
 =============================
 Python 
@@ -152,6 +154,27 @@ Python
 	Create a virtual server
 	ssh to vritual server
 	create ssh abstraction deamon
-
+	
 PHP/Laravel
 1 Create routes
+
+
+
+
+
+deploy.App:#Class pour géréer un serveur d'application
+	deployApp # deployer application
+	installPackages # install basique de paquet requit pour faire tourner le serveur demandé
+	installUserPackages # install des paquets utilisateurs
+	createVirtualHost # créer un hote virtuel lighthttpd avec un numéro de port libre
+	destroyVirtualHost # detruite un hote virtuel lighthttpd avec un numéro de port libre
+	createRelease # crée un dossier de release
+
+deploy.Db:#Class pour deployer & gérer un serveur de base de données
+	deploy # deployer un sgbd
+	installSgbd # install basique (type de sgbd)
+	createDb # crée une db sur le un sgbd pour une appli
+	destroyDb # detruit une db sur le un sgbd pour une appli
+	getSgbd # Retourne le sgbd utilisé pour la connection
+	connect # connect le sgbd
+	dumpDb # dump la database de l'appli
