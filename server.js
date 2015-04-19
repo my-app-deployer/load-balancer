@@ -3,7 +3,8 @@ var net=require('net'),
     httpProxy = require('http-proxy'),
     mongoose=require('mongoose'),
     assert = require('assert'),
-    proxyServer=require('./proxy');
+    proxyServer=require('./proxy'),
+    fs=require('fs');
 port=5050
 
 // Connect to the db
@@ -12,26 +13,24 @@ var AppServers=require('./schema/AppServer');
 
 var proxyRouter = new proxyServer({
 	model:AppServers,
-  cache_ttl: 5
+  	cache_ttl: 5
 });
 
-var proxy=httpProxy.createServer(function(req,res,proxy){
-	var buffer=httpProxy.buffer(req);
+var proxy=httpProxy.createServer({});
+var server=http.createServer(function(req,res){
+	
 	var hostname = req.headers.host.split(':')[0];
-
-	proxyServer.lookupHostname(hostname,function(route){
+	console.log(req);
+	proxyRouter.lookupHostname(hostname,function(route){
 		if(route){
-			try{
+			var target="http"+"://"+route.host+":"+route.port/*+req.url*/;
 				console.log(route);
-				console.log("http://"+route.host+":"+route.port+req.url);
-				//proxy.proxyRequest(req,res,{target:"http://"+route.host+":"+route.port+req.url})
-			}
-			catch(e)
-			{
-				console.log(e);
-			}
+				console.log("http"+"://"+route.host+":"+route.port+req.url);
+				proxy.web(req,res,{target:target});
+
 		}
 		else{
+			console.log("Error, 404");
       		try {
 		        res.writeHead(404);
 		        res.end();

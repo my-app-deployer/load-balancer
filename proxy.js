@@ -5,8 +5,11 @@ var ProxyServer=function(opts){
 }
 ProxyServer.prototype.lookupHostname = function(hostname,callback) {
 	var self=this;
+	console.log('{"Load":{"$lt":"60"},"Domaine":hostname,"$or":[{"Load":{"$lt":"60"}},{"Ip":hostname}]}');
 	if(!self.cache[hostname]){
-		this.model.findOne({"Load":{"$lt":"60"},"Domaine":hostname}).exec(function(err,doc){
+		var q=self.model.where({"Load":{"$lte":"60"}},{"Domaine":hostname});
+		//{"Load":{"$lt":"60"},"Domaine":hostname,"$or":[{"Load":{"$lt":"60"}},{"Ip":hostname}]}
+		q.findOne().exec(function(err,doc){
 			if(!err){
 				if(doc){
 					var target={host:doc.Ip,port:doc.Port};
